@@ -14,8 +14,12 @@ public partial class ListaProduto : ContentPage
         lst_produtos.ItemsSource = lista;
 	}
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
+        base.OnAppearing();
+
+        lista.Clear();
+
         List<Produto> tmp = await App.Db.GetAll();
 
         tmp.ForEach(i => lista.Add(i));
@@ -35,11 +39,20 @@ public partial class ListaProduto : ContentPage
     }
     private async void txt_search_TextChanged(object sender,TextChangedEventArgs e)
     {
-        string q = e.NewTextValue;
+        string q = e.NewTextValue ?? string.Empty;
 
         lista.Clear();
 
-        List<Produto> tmp = await App.Db.Seach(q);
+        List<Produto> tmp;
+
+        if (string.IsNullOrWhiteSpace(q))
+        {
+            tmp = await App.Db.GetAll();
+        }
+        else
+        {
+            tmp = await App.Db.Search(q);
+        }
 
         tmp.ForEach(i => lista.Add(i));
     }
