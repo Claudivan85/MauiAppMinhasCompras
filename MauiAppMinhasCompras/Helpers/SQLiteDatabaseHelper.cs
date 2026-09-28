@@ -11,6 +11,17 @@ namespace MauiAppMinhasCompras.Helpers
         {
             _conn = new SQLiteAsyncConnection(path);
             _conn.CreateTableAsync<Produto>().Wait();
+
+            try
+            {
+                _conn.ExecuteAsync(
+                    "ALTER TABLE Produto ADD COLUMN Categoria TEXT DEFAULT ''"
+                ).Wait();
+            }
+            catch
+            {
+                // A coluna já existe.
+            }
         }
         
         public Task<int> Insert(Produto p) 
